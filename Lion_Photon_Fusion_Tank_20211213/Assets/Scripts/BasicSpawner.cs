@@ -20,6 +20,8 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public NetworkPrefabRef goPlayer;
     [Header("畫布連線")]
     public GameObject goCancas;
+    [Header("玩家生成位置")]
+    public Transform[] traSpawnPoints;
 
     //玩家輸入的房間名稱
     private string roomNameInput;
@@ -93,10 +95,25 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     {
       
     }
-
+    /// <summary>
+    /// 玩家連線輸入行為
+    /// </summary>
+    /// <param name="runner">連線執行器</param>
+    /// <param name="input">輸入資訊</param>
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-      
+        NetworkInputData inputData = new NetworkInputData();    //新增連線輸入資料 結構
+
+        #region 自訂輸入按鍵與移動資訊
+        if (Input.GetKey(KeyCode.W)) inputData.direction += Vector3.forward;    
+        if (Input.GetKey(KeyCode.S)) inputData.direction += Vector3.back;
+        if (Input.GetKey(KeyCode.A)) inputData.direction += Vector3.left;
+        if (Input.GetKey(KeyCode.D)) inputData.direction += Vector3.right;
+        #endregion
+
+        inputData.inputFire = Input.GetKey(KeyCode.Mouse0); //左鍵 發射
+
+        input.Set(inputData);   //輸入資訊.設定(連線輸入資料)
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
@@ -104,19 +121,33 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
         
     }
     /// <summary>
+    /// 玩家的資料集合：玩家參考資訊.玩家連線物件
+    /// </summary>
+    private Dictionary<PlayerRef, NetworkObject> players = new Dictionary<PlayerRef, NetworkObject>();
+
+    /// <summary>
     /// 當玩家加入房間後
     /// </summary>
     /// <param name="runner">連線執行器</param>
     /// <param name="player">玩家資訊</param>
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
+        //隨機生成點 = 隨機範圍.生成位置數量
+        int randomSpawnPoint = UnityEngine.Random.Range(0, traSpawnPoints.Length);
         // 連線執行器.生成(物件.座標.角度.玩家資訊)
-        runner.Spawn(goPlayer, new Vector3(-5, 1, -10), Quaternion.identity, player);
+        NetworkObject playerNetworkObject = runner.Spawn(goPlayer, traSpawnPoints[randomSpawnPoint].position, Quaternion.identity, player);
+        // 將玩家參考資料與聯線物件 加到字典集合內
+        players.Add(player, playerNetworkObject);
     }
 
+    // 當玩家退出後
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-       
+       if(players.TryGetValue(player,out NetworkObject playerNetworkObject))
+        {
+            runner.Despawn(playerNetworkObject); //連線執行器.取消生成(該玩家連線物件移除)
+            players.Remove(player);              // 玩家集合.移除(該玩家)
+        }
     }
 
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data)
