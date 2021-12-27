@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2199958467513735611}
   - component: {fileID: 2199958467513735610}
   - component: {fileID: 2199958467513735609}
+  - component: {fileID: 1170554652396537630}
   m_Layer: 0
   m_Name: "\u5B50\u5F48\u7269\u4EF6"
   m_TagString: Untagged
@@ -28,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2199958467513735613}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5, y: 1, z: -5}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 6904964650366941354}
   m_Father: {fileID: 0}
@@ -100,6 +101,21 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.16585858
   m_Center: {x: -0.00999999, y: -0.016435862, z: 0.13}
+--- !u!114 &1170554652396537630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2199958467513735613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb62022d2ffb5747a8338e2bf9af154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  speed: 5
+  lifeTime: 5
 --- !u!1001 &2199958467755813408
 PrefabInstance:
   m_ObjectHideFlags: 0
